@@ -1,0 +1,35 @@
+services:
+  traefik:
+    image: traefik:v3.5.1
+    container_name: traefik
+    ports:
+      - "80:80"
+      - "443:443"
+    environment:
+      - CF_DNS_API_TOKEN=${CF_DNS_API_TOKEN}
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./config/traefik.yaml:/etc/traefik/traefik.yaml:ro
+      - ./config/dynamic/middleware.yaml:/etc/traefik/middleware.yaml:ro
+      - ./data/certs:/var/traefik/certs:rw
+      - .access.log:/logs/access.log
+    networks:
+      - frontend
+    dns: 
+      - 1.1.1.1
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.traefiks.tls=true
+      - traefik.http.routers.traefiks.tls.certresolver=cloudflare
+      - traefik.http.routers.traefiks.entrypoints=websecure
+      - traefik.http.routers.traefiks.rule=Host(`traefik.lurking.site`)
+      - traefik.http.routers.traefiks.service=api@internal
+    restart: unless-stopped
+
+networks:
+  frontend:
+    external: true
+
+
+      
+
