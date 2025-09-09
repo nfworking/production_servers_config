@@ -3,15 +3,12 @@ services:
   nginx:
     image: nginx:1.25.5-alpine
     container_name: nginx-demo-1
+    ports:
+      - "8080:80"
     volumes:
       - ./config/default.conf:/etc/nginx/conf.d/default.conf:ro
-      - ./server_site:/usr/share/nginx/html
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.nginx-demo-1-https.entrypoints=websecure"
-      - "traefik.http.routers.nginx-demo-1-https.rule=Host(`nginx-demo-1.lurking.site`)"
-      - "traefik.http.routers.nginx-demo-1-https.tls=true"
-      - "traefik.http.routers.nginx-demo-1-https.tls.certresolver=cloudflare"
+      - site_data:/site_data
+      - /site_data/html:/usr/share/ngnix/html
     networks:
       - frontend
     restart: unless-stopped
@@ -20,4 +17,6 @@ networks:
   frontend:
     external: true
 
-
+volumes:
+  site_data:
+    external: true

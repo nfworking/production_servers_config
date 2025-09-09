@@ -2,8 +2,8 @@ services:
   outline:
     image: docker.getoutline.com/outlinewiki/outline:latest
     env_file: ./docker.env
-    expose:
-      - "3000"
+    ports:
+      - "3000:3000"
     volumes:
       - storage-data:/var/lib/outline/data
     depends_on:
@@ -11,14 +11,7 @@ services:
       - redis
     networks:
       - frontend
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.outline.rule=Host(`wiki.lurking.site`)"
-      - "traefik.http.routers.outline.entrypoints=websecure"
-      - "traefik.http.routers.outline.tls.certresolver=cloudflare"
-      - "traefik.http.services.outline.loadbalancer.server.port=3000"
-      - "traefik.http.routers.outline.service=outline"
-      - "traefik.http.routers.outline.tls=true"
+
   redis:
     image: redis
     env_file: ./docker.env
